@@ -1,0 +1,499 @@
+================================================================
+Creación de una aplicación Web con Python y la librería Django 
+================================================================
+
+Video 01 -> (01 - 08)
+Video 02 -> (09 - 15)
+Video 03 -> (16 - 20)
+Video 04 -> (21 - 23)
+Vide0 05 -> (24 - 26)
+
+A - Ambiente de desarrollo
+	- Python
+	- PostgreSQL
+	- Psycopg2
+	- Django
+
+B - Instalacion
+		Se utilizará entorno virtual para que contenga las diferentes dependencias del proyectos. 
+		Si se usa entorno global cuando se exporte el codigo, la otra persona tendrá que instalar las dependencias que no tenga
+
+Video 01
+	1 - Crear carpeta principal
+			Creamos una carpeta con cualquier nombre, en mi caso será EntornoDjango
+			Abrimos dicha carpeta en Visual Studio Code o el editor de tu preferencia
+
+	2 - Instalacion de la dependencia virtualenv para crear entorno virtual
+			Abrimos la consola y ejecutamos este código
+				pip install virtualenv
+		
+	3 - Crear el entorno virtual
+			Nuevamente, en la consola ejecutamos el siguiente código
+				virtualenv EntornoVirtualDjango <- nombre del entorno, puede ser el de tu gusto
+		
+	4 - Activar el entorno virtual
+			Ingresar a la siguiente carpeta, por medio de la consola
+				cd EntornoVirtualDjango/Scripts
+			
+			Una vez dentro de la carpeta script escribimos lo siguientepara activar el entorno
+				activate
+				
+				Puede que le de un error con el comando anterior debido a que la ajecucion de scripts este deshabilitada.
+				Puede activarla ejecutando el programa cmd.exe como administrador y ejecutando este comando #Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+				Set-ExecutionPolicy -Scope CurrentUser
+				Proporcione valores para los parámetros siguientes:
+				ExecutionPolicy: RemoteSigned
+				
+				Tambien puede ejecutar el comando .\activate, para activar el entorno
+			
+			Cuando el entorno virtual esta activado vera al principio algo como esto (entornoDjango) seguido el path
+
+	5 - Ver dependencias instaladas
+			pip freeze
+		
+	6 - Instalacion de la ultima version de django en el entorno virtual
+			pip install django
+			Para instalar la version de tu preferencia anota: pip install django==(# version)
+
+			Cuando se termine de instalar tendra que aparecerte este mensaje
+			Successfully installed asgiref-(# version) django-(# version) pytz-(# version) sqlparse-(# version)
+			
+	7 - Instalar dependencia para conectar al motor de base de datos PostgreSQL
+			pip install psycopg2
+
+	8 - Todo listo en el entorno virtual, ahora regresar a la carpeta principal, la que creamos en el paso 1
+			cd.. (2 veces)
+			En mi caso es EntornoDjango
+
+Video 02
+	9 - Crear proyecto
+			django-admin startproject crudDjango (anota el nombre de tu preferencia)
+
+	10 - Buscar y editar el archivo settings.py
+			En la seccion de DATABASES eliminar lo que esta dentro de los corchetes y escribir lo siguiente:
+				
+				# algunos datos debes anotarlos segun tu configuracion personal)
+				'default': {
+					'ENGINE': 'django.db.backends.postgresql_psycopg2',
+					'NAME': 'crudDjango', # Nombre de la base de datos
+					'USER': 'jperez', # Cambiar usuario
+					'PASSWORD': 'Vsmora1989', # Cambiar la contraseña
+					'HOST': 'localhost',
+					'PORT': 5432, # Puerto por defecto de PostgreSQL
+				}
+
+	11 - Crear la base de datos en PostgreSQL
+			Abrir pgAdmin
+			Click derecho sobre Databases -> Create -> Databases...
+			Escribes el nombre de la base de datos: crudDjango y aceptar
+
+	12 - Preparar la migracion de django a la base de datos
+			ingresar a la carpeta del proyecto
+				cd crudDjango
+			Preparar la migracion
+				python manage.py makemigrations
+				# No habra cambios detectados, pero creara una carpeta llamada __pycache__
+			Ejecutar la migracion
+				python manage.py migrate
+			Revisar en el panel de administracion que las tablas se hayan creado
+
+	13 - Crear carpeta contenedora
+			Dentro de la carpeta crudDjango crear una carpeta llamada app y dentro crear un archivo con nombre __init__.py
+			
+			Por el momento deberiamos ver algo asi:		
+			EntornoDjango 
+				- crudDjango
+					- app
+						- __init__
+				- EntornoVirtualDjango
+
+	14 - Iniciar la aplicacion
+			Ingresar, por medio consola, a la carpeta creada anteriormente
+				cd app
+			Escribir lo siguiente para crear la carpeta aplicacion y crea varios archivos, vistas, modelos, etc
+				django-admin startapp aplicacion <- este nombre puede ser el de tu gusto
+				
+			Por el momento deberiamos ver algo asi:		
+				- crudDjango
+					- app
+						- aplicacion
+							- .py 
+							- .py
+							- .py
+						- __init__
+				- EntornoVirtualDjango
+
+	15 - Agregar la aplicacion a la configuracion del proyecto, editar, nuevamente, el archivo settings.py
+		Agregar la ultima linea en el siguiente apartado:
+			INSTALLED_APPS = [
+				'django.contrib.admin',
+				'django.contrib.auth',
+				'django.contrib.contenttypes',
+				'django.contrib.sessions',
+				'django.contrib.messages',
+				'django.contrib.staticfiles',
+				'app.aplicacion',
+			]
+
+Video 03
+	16 - Agregar, en el archivo models.py que esta en la carpeta aplicacion, los modelos a trabajar, en mi caso contactos.
+			class Contacto(models.Model):
+				id = models.AutoField(primary_key = True) # campo autoincremental
+				nombre = models.CharField(max_length = 200)
+				email = models.CharField(max_length = 100)
+				telefono = models.CharField(max_length = 8)
+		
+	17 - Aplicar el modelo a la base de datos
+			Observemos el esquema para luego ejecutar el código
+				- crudDjango
+					- app
+						- aplicacion
+							- .py 
+							- .py
+							- .py
+						- __init__
+					- manage.py
+				- EntornoVirtualDjango
+				
+			Ir a la ruta donde se encuentra el archivo manage.py, o sea, a crudDjango, y luego escribir los comandos en la consola			
+				Generar la migracion
+					python manage.py makemigrations
+				Aplicar la migracion
+					python manage.py migrate
+			Revisar en el panel de PostgreSQL los cambios en la base de datos
+
+	18 - Crear un super usuario para el servidor de Django
+			En la consola escribir:
+				python manage.py createsuperuser
+				Te va a pedir el nombre de usuario que quieres para ingresar al panel, la contraseña y correo electronico, al final debes observar el mensaje 'Superuser created successfully'
+
+	19 - Iniciar el servidor de Django
+			En la consola escribir:
+				python manage.py runserver
+			Para acceder dar click en la url que te proporciona http://127.0.0.1:8000/ o bien escribes localhost:8000
+			Te aparecerá el dashboard de django con un mensaje '¡La instalación funcionó con éxito! ¡Felicitaciones!'
+		
+	20 - Acceder al administrador de Django para agregar un contacto con "trampa" jaja
+			Escribes en el navegador:
+				localhost:8000/admin
+			Anotas el usuario y contraseña registrado anteriormente
+			Debe aparecerte el dashboard con la aplicacion de Contactos y puedes hacer crud, pero eso no es lo que queremos
+			Puedes revisar la tabla para ver si se agregó correctamente el dato
+
+Video 04
+	21 - Creacion de la vistas
+			21.1 - Crear dos archivos en la carpeta aplicacion
+					forms.py
+					urls.py
+			
+			21.2 En el archivo forms.py escribir:
+					#Importamos la dependencia forms
+					from django import forms
+					#Importamos el modelo a utilizar, se creó en el paso 16
+					from .models import Contacto
+					
+					#Creacion de la clase para el Form
+					class FormContacto(forms.ModelForm):
+						class Meta:
+							model = Contacto
+							#Campos que se van a ocupar del modelo
+							fields = {
+								'nombre',
+								'email',
+								'telefono',
+							}
+			
+			21.3 En el archivo Views.py escribimos
+			
+					from django.shortcuts import render, redirect
+					from django.contrib import messages # Para enviar mensajes al frontEnd
+					from .models import *
+					from .forms import FormContacto
+					from django.core.exceptions import ObjectDoesNotExist # En caso de que alguna consulta no exista recupera el error y lo muestra
+
+					# Vista que se maneja como index, lista los contactos
+					def Home(request):
+						 lstContactos = Contacto.objects.all()
+						 context = {'lstContactos': lstContactos}
+						 return render(request, 'index.html', context)
+
+					# Vista para agregar contacto
+					def agregarContacto(request):
+						 if request.method == 'POST':
+							  form = FormContacto(request.POST)
+							  if form.is_valid():
+								   form.save()
+								   messages.success(request, 'Datos almacenados correctamente')
+							  else:
+								   messages.error(request, 'Se presentó un problema con los datos')
+							  return redirect('index')
+						 else:
+							  form = FormContacto()
+						 return render(request, 'agregarContacto.html', {'form': form})
+
+					# def listarContactos(request):
+					#      lstContactos = Contactos.objects.all()
+					#      context = {'lstContactos': lstContactos}
+					#      return render(request, 'listarContactos.html', context)
+
+					def editarContacto(request, id):
+						 #Se definen las variables con None para que den error al ejecutar la vista
+						 form = None
+						 error = None
+						 
+						 try:
+							  # Cuando solicitamos la informacion a la base de datos del contacto que vamos a editar
+							  contacto = Contacto.objects.get(id=id)
+							  if request.method == 'GET':               
+								   form = FormContacto(instance=contacto)
+							  else:
+								   # Cuando damo en el boton de guardar lo que hemos editado
+								   form = FormContacto(request.POST, instance=contacto)
+								   if form.is_valid():
+										form.save()
+										messages.success(request, 'Datos actualizados correctamente')
+								   else:
+										messages.error(request, 'Se presentó un problema con los datos')
+								   return redirect('index')
+							  
+						 except ObjectDoesNotExist as e:
+							  error = e
+							  
+						 #Cuando se aplica el GET redirecciona al form con los datos, si no encuentra el id enviar el error
+						 return render(request, 'agregarContacto.html', {'form': form, 'error': error})
+
+					def eliminarContacto(request, id):
+						 #Se definen las variables con None para que den error al ejecutar la vista
+						 form = None
+						 error = None
+						 
+						 try:
+							  #Opcion 1 Eliminacion directa
+							  #Obtenemos el contacto por medio del id y lo eliminamos
+							  contacto = Contacto.objects.get(id=id)
+							  if contacto.delete():
+								   messages.success(request, 'Dato eliminado correctamente')
+							  else:
+								   messages.error(request, 'Se presentó un problema con los datos')
+							  
+							  return redirect('index')
+
+							  #Opcion 2 Eliminacion logica
+							  # Debemos tener un campo, por ejemplo de Estado en la tabla que sea true o false
+							  #contacto = Contacto.objects.get(id=id)
+							  #contacto.estado = False
+							  #contacto.save()
+							  #return redirect('index')
+						 
+						 except ObjectDoesNotExist as e:
+							  error = e
+			
+			21.4 Editar el archivo urls.py agregar las urls:
+					from django.urls import path
+					from .views import *
+
+					urlpatterns = [
+						 path('', Home, name = 'index'),
+						 path('agregarContacto/', agregarContacto, name = 'agregarContacto'),
+						 path('editarContacto/<int:id>', editarContacto, name = 'editarContacto'),
+						 path('eliminarContacto/<int:id>', eliminarContacto, name = 'eliminarContacto'),
+					]
+				
+			21.5 Agregar las url de las vistas a las urls generales, editando urls.py que se encuentra en la carpeta donde esta el archivo settings.py
+					from django.contrib import admin
+					from django.urls import path, include
+
+					urlpatterns = [
+						path('', include('app.aplicacion.urls')),
+						path('admin/', admin.site.urls),
+					]
+				
+	22 - Agregar los directorios, editar el archivo settings.py
+			22.1 importar la libreria os
+					from pathlib import Path, os
+					
+			22.2 En el apartado TEMPLATES:
+					'DIRS': [os.path.join(BASE_DIR, 'templates')],
+					'APP_DIRS': True, # indica que dentro de la carpeta templates va a buscar los templates que se solicitan
+
+	23 - Crear templates
+			23.1 Crear la carpeta templates al mismo nivel de la carpeta app
+				- crudDjango
+					- app
+						- aplicacion
+							- .py 
+							- .py
+							- .py
+						- __init__
+					- templates
+					- manage.py
+				- EntornoVirtualDjango
+				
+			23.2 En la carpeta templates crear los archivos frontEnd
+				- crudDjango
+					- app
+						- aplicacion
+							- .py 
+							- .py
+							- .py
+						- __init__
+					- templates
+						- agregarContacto.html
+						- index.html
+						- layout.html				
+					- manage.py
+				- EntornoVirtualDjango
+
+Video 05
+	24 - Agregar en el archivo layout.html
+			{% load static %}
+			<!doctype html>
+			<html lang="en">
+			<head>
+				 <meta charset="UTF-8">
+				 <meta name="viewport"
+					  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+				 <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+				 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+					  integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+				
+				 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+					  integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+				 </script>
+				 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+					  integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+				 </script>
+				 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+					  integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous">
+				 </script>
+
+				 {% block titulo %}
+				 {% endblock %}
+			</head>
+
+			<body class="container-fluid">
+				 <header class="col-md-12">
+					  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+						   <a class="navbar-brand" href="#">Inicio</a>
+						   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+								aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+								<span class="navbar-toggler-icon"></span>
+						   </button>
+
+						   <div class="collapse navbar-collapse" id="navbarSupportedContent">
+								<ul class="navbar-nav mr-auto">
+									 <li class="nav-item active">
+										  <a class="nav-link" href="{% url 'index' %}">Contactos</a>
+									 </li>
+									
+								</ul>
+						   </div>
+					  </nav>
+				 </header>
+				 
+				 <main class="col-md-12">
+					  <div class="container">
+						   {% block contenido %}
+								
+						   {% endblock %}
+					  </div>
+				 </main>
+
+				 <footer class="col-md-12">
+
+				 </footer>
+			</body>
+			</html>
+			
+	25 - Agregar en el archivo index.html
+			{% extends 'layout.html' %} 
+			{% block titulo %}
+				<title>Lista de Contactos</title>
+			{% endblock %} 
+
+			{% block contenido %}
+				{% if messages %}
+					{% for message in messages %}
+						<div style="background-color: #A3CB38;" class="text-white mt-2 alert alert-dismissible fade show" role="alert">
+							 <strong>{{ message }}</strong>
+							 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								  <span aria-hidden="true">&times;</span>
+							 </button>
+						</div>
+					{% endfor %}
+				{% endif %}
+
+				<div class="card mt-3">
+					 <div class="card-header">
+						  <h3>Control de contactos con Django</h3>
+					 </div>
+
+					 <div class="card-body">
+						  <div class="pb-2 justify-content-center">
+							   <a href="{% url 'agregarContacto' %}" class="btn btn-outline-primary btn-sm">Nuevo Contacto</a>
+						  </div>
+						  <table class="table table-sm table-hover">
+							   <thead class="thead-dark">
+									<tr>
+										 <th scope="col">ID</th>
+										 <th scope="col">Nombre</th>
+										 <th scope="col">Email</th>
+										 <th scope="col">Telefono</th>
+										 <th scope="col">Controles</th>
+									</tr>
+							   </thead>
+							   <tbody>
+									{% for Contacto in lstContactos %}
+										<tr>
+											 <th scope="row">{{ Contacto.id}}</th>
+											 <td>{{ Contacto.nombre}}</td>
+											 <td>{{ Contacto.email}}</td>
+											 <td>{{ Contacto.telefono}}</td>
+											 <td>
+												  <div class="row">
+													   <a href="{% url 'editarContacto' Contacto.id %}"
+															class="mr-3 col-5 btn btn-outline-success btn-sm">Editar</a>
+
+													   <a href="{% url 'eliminarContacto' Contacto.id %}"
+															class="mr-3 col-5 btn btn-outline-danger btn-sm">Eliminar</a>
+												  </div>
+											 </td>
+										</tr>
+									{% endfor %}
+							   </tbody>
+						  </table>
+					 </div>
+				</div>
+			{% endblock%}
+
+	26 - Agregar en el archivo agregarContacto.html
+		{% extends 'layout.html' %}
+		{% block titulo %}
+			 <title>Agregar Contacto</title>
+		{% endblock %}
+
+		{% block contenido %}
+			 {% if error %}
+				  <h3>{{ error }}</h3>
+			 {% else %}
+				  <div class="container mt-3 w-25">
+					   <div class="row">
+							<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+								 <div class="card">
+									  <div class="card-header text-center text-uppercase">
+										   <h3>Datos</h3>
+									  </div>
+									  <div class="card-body">
+										   <form action="" method="post">
+												{% csrf_token %}
+												{{ form.as_p }}
+												<button type="submit" class="btn btn-success">Guardar</button>
+										   </form>
+									  </div>
+								 </div>
+							</div>
+					   </div>
+				  </div>
+			 {% endif %}
+		{% endblock %}

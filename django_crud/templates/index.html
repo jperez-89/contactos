@@ -1,0 +1,61 @@
+{% extends 'layout.html' %} 
+
+{% block titulo %}
+<title>Lista de Contactos</title>
+{% endblock %} 
+
+{% block contenido %}
+{% if messages %}
+{% for message in messages %}
+<div style="background-color: #A3CB38;" class="text-white mt-2 alert alert-dismissible fade show" role="alert">
+     <strong>{{ message }}</strong>
+     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+     </button>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="card mt-3">
+     <div class="card-header">
+          <h3>Control de contactos con Django</h3>
+     </div>
+
+     <div class="card-body">
+          <div class="pb-2 justify-content-center">
+               <a href="{% url 'agregarContacto' %}" class="btn btn-outline-primary btn-sm">Nuevo Contacto</a>
+          </div>
+          <table class="table table-sm table-hover">
+               <thead class="thead-dark">
+                    <tr>
+                         <th scope="col">ID</th>
+                         <th scope="col">Nombre</th>
+                         <th scope="col">Email</th>
+                         <th scope="col">Telefono</th>
+                         <th scope="col">Controles</th>
+                    </tr>
+               </thead>
+               <tbody>
+                    {% for Contacto in lstContactos %}
+                    <tr>
+                         <th scope="row">{{ Contacto.id}}</th>
+                         <td>{{ Contacto.nombre}}</td>
+                         <td>{{ Contacto.email}}</td>
+                         <td>{{ Contacto.telefono}}</td>
+                         <td>
+                              <div class="row">
+                                   <a href="{% url 'editarContacto' Contacto.id %}"
+                                        class="mr-3 col-5 btn btn-outline-success btn-sm">Editar</a>
+
+                                   <a href="{% url 'eliminarContacto' Contacto.id %}"
+                                        class="mr-3 col-5 btn btn-outline-danger btn-sm">Eliminar</a>
+                              </div>
+                         </td>
+                    </tr>
+                    {% endfor %}
+               </tbody>
+          </table>
+     </div>
+</div>
+
+{% endblock%}
